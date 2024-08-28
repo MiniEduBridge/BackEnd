@@ -12,8 +12,6 @@ const connectDB = async () => {
 
   try {
     client = new MongoClient(url, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
     });
 
     await client.connect();

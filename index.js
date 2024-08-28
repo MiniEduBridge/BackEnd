@@ -1,14 +1,16 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const connectDB = require('./db'); // MongoDB 연결 모듈 가져오기
+const { connectDB, getDB } = require('./db'); // MongoDB 연결 모듈 가져오기
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
+const { ObjectId } = require('mongodb');
 
 const app = express();
 const port = 3000;
 
 app.use(bodyParser.json());
 
+// 세션 설정
 app.use(session({
   secret: 'vvoi54ll8h',
   resave: false,
@@ -16,11 +18,11 @@ app.use(session({
   cookie: { secure: false } // HTTPS를 사용하는 경우 secure: true로 설정
 }));
 
-let db; // 데이터베이스 객체
+let db;
 
 // 서버 시작 시 데이터베이스 연결
-connectDB().then((database) => {
-  db = database; // 데이터베이스 객체 할당
+connectDB().then(() => {
+  db = getDB(); // getDB로 연결된 DB 인스턴스 가져오기
 
   // 회원가입 API
   app.post('/api/register', async (req, res) => {
@@ -127,19 +129,25 @@ connectDB().then((database) => {
   // 특정 게시글 조회
   app.get('/api/posts/:id', async (req, res) => {
     try {
-      const collection = db.collection('posts');
-      const post = await collection.findOne({ _id: new ObjectId(req.params.id) });
+      const postId = req.params.id;
       
+      // ObjectId 변환 시 오류가 발생할 경우 예외 처리
+      if (!ObjectId.isValid(postId)) {
+        return res.status(400).json({ error: '잘못된 게시글 ID 형식입니다.' });
+      }
+
+      const collection = db.collection('posts');
+      const post = await collection.findOne({ _id: new ObjectId(postId) });
+
       if (!post) {
         return res.status(404).json({ error: '게시글을 찾을 수 없습니다.' });
       }
-      
+
       res.json(post);
     } catch (error) {
       res.status(500).json({ error: '게시글 조회 중 오류가 발생했습니다.' });
     }
   });
-  
 
   // 서버 실행
   app.listen(port, () => {
