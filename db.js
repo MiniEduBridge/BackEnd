@@ -5,7 +5,7 @@ const url = "mongodb+srv://admin:admin@miniedubridge.cnupy.mongodb.net/?retryWri
 // MongoDB 연결 함수
 const connectDB = async () => {
   try {
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
+    const client = await MongoClient.connect(url);
     console.log('MongoDB에 성공적으로 연결되었습니다.');
     return client.db('mydatabase');  // 연결된 데이터베이스 반환 (예: 'mydatabase')
   } catch (err) {
