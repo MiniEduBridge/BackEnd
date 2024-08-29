@@ -1,7 +1,7 @@
 const { MongoClient } = require("mongodb");
 
 const url = "mongodb+srv://admin:admin@miniedubridge.cnupy.mongodb.net/?retryWrites=true&w=majority&appName=MiniEduBridge";
-const dbName = "miniEduBridge"; // 데이터베이스 이름을 지정합니다.
+const dbName = "test"; // 데이터베이스 이름을 지정합니다.
 
 let client;
 
